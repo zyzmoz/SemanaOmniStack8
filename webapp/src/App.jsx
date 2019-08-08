@@ -8,7 +8,7 @@ const App = () => {
   return (
     <Router>      
       <Route exact path="/" component={Login} />      
-      <Route exact path="/main" component={Main} />  
+      <Route exact path="/dev/:id" component={Main} />  
       {/* <Route path="**" component ={Login} />     */}
     </Router>
   );

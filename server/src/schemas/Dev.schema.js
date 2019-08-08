@@ -56,21 +56,27 @@ const mutation = new GraphQLObjectType({
       addDev: {
         type: devType,
         args: {
-          user: { type: new GraphQLNonNull(GraphQLString) }          
+          user: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve: async (root, params) => {
-          const { data } = await axios.get(`https://api.github.com/users/${params.user}`);
-          console.log(data, params);          
-          const devModel = new DevModel({
-            avatar: data.avatar_url,
-            user: params.user,
-            bio: data.bio,
-            name: data.name
-          });
-          const newDev = devModel.save();
-          if (!newDev)
-            throw new Error('Error saving Dev!');
-          return newDev;
+        resolve: async (root, params) => {         
+          
+          const dev = await DevModel.find({ user: { $eq: params.user } }).exec();
+          console.log(dev)
+          if (!dev || dev.length === 0) {
+            const { data } = await axios.get(`https://api.github.com/users/${params.user}`);
+            const devModel = new DevModel({
+              avatar: data.avatar_url,
+              user: params.user,
+              bio: data.bio,
+              name: data.name
+            });
+            const newDev = devModel.save();
+            if (!newDev)
+              throw new Error('Error saving Dev!');
+              return newDev;
+          }
+
+          return dev[0];
         }
       }
     }

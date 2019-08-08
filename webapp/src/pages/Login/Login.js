@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import './Login.css';
+import { login } from '../../services/api';
 
 const Login = ({ history }) => {
   const [user, setUser] = useState('');
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    history.push('/main');
+    const data = await login(user);    
+    history.push(`/dev/${data._id}`);
   }
   return (
     <div className="login-container">

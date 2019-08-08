@@ -1,0 +1,12 @@
+.dev-list {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  
+}
+.card {
+  
+  width: 250px;
+  margin: 5px;
+  border: 1px solid #999;
+}

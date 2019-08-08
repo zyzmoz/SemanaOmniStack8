@@ -1,17 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Profile from '../../components/Profile/Profile';
+import { getDev } from '../../services/api';
+import DevList from '../../components/Devs/DevList';
 
-const Main = () => {
-  const profile = {
-    "_id": "5d49ceddc3a53404507dc0bf",
-    "name": "Daniel Cunha",
-    "avatar": "https://avatars2.githubusercontent.com/u/6368327?v=4",
-    "user": "zyzmoz",
-    "bio": null
-  }
+const Main = ({ match }) => {
+  const [profile, setProfile] = useState();
+  useEffect(() => {
+    const getData = async () => {
+      const devId = match.params.id;
+      const dev = await getDev(devId);      
+      setProfile(dev);
+    }
+
+    getData();
+
+  }, []);
+  
   return (
     <div>
-      <Profile profile={profile}/>
+      {profile && <Profile profile={profile} />}
+      <DevList />
     </div>
   );
 };
