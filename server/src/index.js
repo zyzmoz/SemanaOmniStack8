@@ -4,7 +4,21 @@ const graphqlHTTP = require('express-graphql');
 const cors = require('cors');
 const schema = require('./schemas');
 
-const server =  express();
+const server = express();
+const http = require('http').createServer(server)
+const io = require('socket.io')(http);
+
+io.on('connection', (socket) => {
+  const { id } = socket.handshake.query;
+  // socket.join(id);
+  socket.on('like', (id, msg) =>{
+    console.log('id', id);
+  })
+  console.log('a user connected');
+  const match = { message: 'match' };
+  io.to(id).emit('match', match)
+});
+
 server.use('*', cors());
 server.use('/graphql', cors(), graphqlHTTP({
   schema: schema,
@@ -16,18 +30,18 @@ mongoose.connect('mongodb://localhost/omni', {
   promiseLibrary: require('bluebird'),
   useNewUrlParser: true
 }).then(() => {
-  console.log('Connection with MongoDB established succesfuly!');  
+  console.log('Connection with MongoDB established succesfuly!');
 }).catch(err => {
   console.log('An error occured while connecting to MondoDB:' + err);
 });
 
 
 //GET, POST, PUT, DELETE
-server.get('/', async(req,res) => {  
+server.get('/', async (req, res) => {
 
 });
 
 
-server.listen(3000, () => {
+http.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
