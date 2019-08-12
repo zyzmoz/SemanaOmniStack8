@@ -5,7 +5,9 @@ const DevSchema = new mongoose.Schema({
   user: { type: String, required: true, unique: true },
   name: String,
   bio: String,
-  avatar: String,  
+  avatar: String, 
+  likes: [],
+  dislikes: [] 
 }, {timestamps: true});
 
 module.exports = mongoose.model('Dev', DevSchema);

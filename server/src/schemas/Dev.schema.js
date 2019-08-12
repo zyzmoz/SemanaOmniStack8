@@ -12,6 +12,8 @@ const devType = new GraphQLObjectType({
       name: { type: GraphQLString },
       bio: { type: GraphQLString },
       avatar: { type: GraphQLString },
+      likes: { type: new GraphQLList(GraphQLString) },
+      dislikes: { type: new GraphQLList(GraphQLString) }
     }
   }
 });
@@ -58,8 +60,8 @@ const mutation = new GraphQLObjectType({
         args: {
           user: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve: async (root, params) => {         
-          
+        resolve: async (root, params) => {
+
           const dev = await DevModel.find({ user: { $eq: params.user } }).exec();
           console.log(dev)
           if (!dev || dev.length === 0) {
@@ -73,13 +75,14 @@ const mutation = new GraphQLObjectType({
             const newDev = devModel.save();
             if (!newDev)
               throw new Error('Error saving Dev!');
-              return newDev;
+            return newDev;
           }
 
           return dev[0];
         }
       }
     }
+
   }
 });
 
