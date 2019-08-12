@@ -60,8 +60,7 @@ const mutation = new GraphQLObjectType({
         args: {
           user: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve: async (root, params) => {
-
+        resolve: async (root, params, req) => {                    
           const dev = await DevModel.find({ user: { $eq: params.user } }).exec();
           console.log(dev)
           if (!dev || dev.length === 0) {

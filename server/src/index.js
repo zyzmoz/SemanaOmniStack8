@@ -7,16 +7,25 @@ const schema = require('./schemas');
 const server = express();
 const http = require('http').createServer(server)
 const io = require('socket.io')(http);
+const connectedUsers = {};
 
 io.on('connection', (socket) => {
   const { id } = socket.handshake.query;
-  // socket.join(id);
-  socket.on('like', (id, msg) =>{
-    console.log('id', id);
-  })
-  console.log('a user connected');
-  const match = { message: 'match' };
-  io.to(id).emit('match', match)
+  connectedUsers[id] = socket.id;
+  // // socket.join(id);
+  // socket.on('like', (id, msg) =>{
+  //   console.log('id', id);
+  // })
+  // console.log('a user connected');
+  // const match = { message: 'match' };
+  // io.to(id).emit('match', match)
+});
+
+//Add IO to all requests
+server.use((req, res, next) => {
+  req.io = io;
+  req.connectedUsers = connectedUsers;;
+  return next();
 });
 
 server.use('*', cors());
