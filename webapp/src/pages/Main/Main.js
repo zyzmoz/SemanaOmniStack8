@@ -15,8 +15,7 @@ const Main = ({ match }) => {
     const socket = io.connect('http://localhost:3000', {query: {id : devId}});
     socket.on('match', (res) => {
       console.log(res);
-    })
-    socket.emit('like', {id: devId, msg: 'like'})
+    });    
 
     getData();
 

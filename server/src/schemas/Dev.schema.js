@@ -60,7 +60,7 @@ const mutation = new GraphQLObjectType({
         args: {
           user: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve: async (root, params, req) => {                    
+        resolve: async (root, params, req) => {
           const dev = await DevModel.find({ user: { $eq: params.user } }).exec();
           console.log(dev)
           if (!dev || dev.length === 0) {
@@ -78,6 +78,36 @@ const mutation = new GraphQLObjectType({
           }
 
           return dev[0];
+        }
+      },
+      like: {
+        type: devType,
+        args: {
+          userId: { type: GraphQLString },
+          devId: { type: GraphQLString },
+        },
+        resolve: async (root, params, req) => {
+          let dev = await DevModel.findById({ _id: params.userId }).exec();
+          if (dev.likes && dev.likes.filter(like => like === params.devId).length === 0) {
+            let likes;
+            if (dev.likes && dev.likes.length > 0) {
+              likes = [...dev.likes, devId]
+            } else {
+              likes = [params.devId]
+            }
+            await DevModel.findByIdAndUpdate(params.userId, { likes: likes }).exec();
+            //Verify if matched
+            const likedUser = await DevModel.findById({_id: params.devId}).exec();
+            if (likedUser.likes.filter(like => like === params.userId)){
+              req.io.to(req.connectedUsers[params.userId]).emit('match',likedUser);
+              req.io.to(req.connectedUsers[params.devId]).emit('match', dev);
+            }
+            
+
+            return { ...dev, likes };
+          } else {
+            return dev;
+          }
         }
       }
     }
